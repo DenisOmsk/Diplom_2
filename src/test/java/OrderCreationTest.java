@@ -14,11 +14,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*; // Импорт статических методов assert для удобства
 
 public class OrderCreationTest {
+    // Константы для пользователя
+    private static final String USER_EMAIL = "denis_user@yandex.ru";
+    private static final String USER_PASSWORD = "password";
+    private static final String USER_NAME = "Денис";
+    private static final User USER_1 = new User(USER_EMAIL, USER_PASSWORD, USER_NAME);
 
-    // Данные пользователя для тестов
-    private static final User USER_1 = new User(
-            "denis_user@yandex.ru", "password", "Денис");
-    // Корректный заказ с тремя ингредиентами
     private static final OrderCreateRequest ORDER_1 = new OrderCreateRequest(
             List.of("61c0c5a71d1f82001bdaaa6d", "61c0c5a71d1f82001bdaaa6f", "61c0c5a71d1f82001bdaaa73"));
     // Пустой заказ (без ингредиентов)
@@ -26,7 +27,7 @@ public class OrderCreationTest {
     // Заказ с одним неверным id ингредиента
     private static final OrderCreateRequest ORDER_WRONG = new OrderCreateRequest(
             List.of("1", "61c0c5a71d1f82001bdaaa6f", "61c0c5a71d1f82001bdaaa73"));
-    String accessToken1; // Токен доступа пользователя, создаваемого в тестах
+    private String accessToken; // Токен доступа пользователя, создаваемого в тестах
 
     @Test
     @DisplayName("Создание заказа с авторизацией") // Имя теста
@@ -34,9 +35,9 @@ public class OrderCreationTest {
             "1. Код и статус ответа 200 ОК;\n" +
             "2. Ошибок в структуре ответа нет.") // Описание для отчёта Allure
     public void createOrder() {
-        accessToken1 = ApiSteps.createUser(USER_1).getAccessToken(); // Регистрируем пользователя и получаем токен
+        accessToken = ApiSteps.createUser(USER_1).getAccessToken(); // Регистрируем пользователя и получаем токен
 
-        OrderResponse orderResponse = ApiSteps.createOrder(accessToken1, ORDER_1); // Создаём заказ с авторизацией
+        OrderResponse orderResponse = ApiSteps.createOrder(accessToken, ORDER_1); // Создаём заказ с авторизацией
         assertAll("Проверка полей ответа", // Группируем проверки
                 () -> assertNotNull(orderResponse.getName(),
                         "Не заполнено поле name!"), // Проверяем, что поле name не пустое
@@ -55,9 +56,9 @@ public class OrderCreationTest {
             "1. Код и статус ответа 400 Bad Request;\n" +
             "2. В ответе описание ошибки.")
     public void createFailedWithoutIngredients() {
-        accessToken1 = ApiSteps.createUser(USER_1).getAccessToken(); // Регистрируем пользователя и получаем токен
+        accessToken = ApiSteps.createUser(USER_1).getAccessToken(); // Регистрируем пользователя и получаем токен
 
-        io.restassured.response.Response response = ApiRequests.sendPostRequestCreateOrder(accessToken1, ORDER_EMPTY); // Создаём заказ без ингредиентов
+        io.restassured.response.Response response = ApiRequests.sendPostRequestCreateOrder(accessToken, ORDER_EMPTY); // Создаём заказ без ингредиентов
         response.then().statusCode(400); // Проверяем, что статус 400 Bad Request
         Response resp = response.body().as(Response.class); // Десериализуем ответ
         assertAll("Проверка полей ответа",
@@ -73,9 +74,9 @@ public class OrderCreationTest {
     @Description("Проверка неуспешного создания заказа с авторизацией и с неверным хешем ингредиентов:\n " +
             "1. Код и статус ответа 500 Internal Server Error.")
     public void createFailedWithWrongIngredient() {
-        accessToken1 = ApiSteps.createUser(USER_1).getAccessToken(); // Регистрируем пользователя и получаем токен
+        accessToken = ApiSteps.createUser(USER_1).getAccessToken(); // Регистрируем пользователя и получаем токен
 
-        io.restassured.response.Response response = ApiRequests.sendPostRequestCreateOrder(accessToken1, ORDER_WRONG); // Создаём заказ с неверным ингредиентом
+        io.restassured.response.Response response = ApiRequests.sendPostRequestCreateOrder(accessToken, ORDER_WRONG); // Создаём заказ с неверным ингредиентом
         response.then().statusCode(500); // Проверяем, что статус 500 Internal Server Error
     }
 
@@ -124,7 +125,7 @@ public class OrderCreationTest {
 
     @AfterEach
     public void tearDown() {
-        if (accessToken1 != null) ApiSteps.deleteUser(accessToken1); // Удаляем пользователя после каждого теста, если он был создан
+        if (accessToken != null) ApiSteps.deleteUser(accessToken); // Удаляем пользователя после каждого теста, если он был создан
     }
 }
 
