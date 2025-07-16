@@ -22,60 +22,70 @@ public class ApiRequests {
             .addFilter(new ErrorLoggingFilter()) // Логируем ошибки запросов
             .build(); // Собираем спецификацию
 
-    @Step("Отправить POST запрос /api/auth/register") // Шаг для отчёта Allure
+    @Step("Отправить POST запрос /api/auth/register")
     public static Response sendPostRequestCreateUser(User user) {
         return given()
-                .spec(SPEC) // Используем базовую спецификацию
-                .body(user) // Тело запроса — объект пользователя
-                .post("/api/auth/register") // POST запрос на регистрацию
-                .thenReturn(); // Возвращаем ответ
+                .spec(SPEC)
+                .body(user)
+                .post("/api/auth/register")
+                .thenReturn();
     }
 
-    @Step("Отправить POST запрос /api/auth/login") // Шаг для отчёта Allure
+    @Step("Отправить POST запрос /api/auth/login")
     public static Response sendPostRequestLoginUser(User user) {
         return given()
-                .spec(SPEC) // Используем базовую спецификацию
-                .body(user) // Тело запроса — объект пользователя
-                .post("/api/auth/login") // POST запрос на логин
-                .thenReturn(); // Возвращаем ответ
+                .spec(SPEC)
+                .body(user)
+                .post("/api/auth/login")
+                .thenReturn();
     }
 
-    @Step("Отправить PATCH запрос /api/auth/user") // Шаг для отчёта Allure
+    @Step("Отправить PATCH запрос /api/auth/user")
     public static Response sendPostRequestUpdateUser(User user, String accessToken) {
         return given()
-                .spec(SPEC) // Используем базовую спецификацию
-                .headers("Authorization", accessToken) // Добавляем заголовок авторизации
-                .body(user) // Тело запроса — объект пользователя с обновлёнными данными
-                .patch("/api/auth/user") // PATCH запрос на обновление пользователя
-                .thenReturn(); // Возвращаем ответ
+                .spec(SPEC)
+                .headers("Authorization", accessToken)
+                .body(user)
+                .patch("/api/auth/user")
+                .thenReturn();
     }
 
-    @Step("Отправить DELETE запрос /api/auth/user") // Шаг для отчёта Allure
+    @Step("Отправить DELETE запрос /api/auth/user")
     public static Response sendPostRequestDeleteUser(String accessToken) {
         return given()
-                .spec(SPEC) // Используем базовую спецификацию
-                .headers("Authorization", accessToken) // Добавляем заголовок авторизации
-                .delete("/api/auth/user") // DELETE запрос на удаление пользователя
-                .thenReturn(); // Возвращаем ответ
+                .spec(SPEC)
+                .headers("Authorization", accessToken)
+                .delete("/api/auth/user")
+                .thenReturn();
     }
 
-    @Step("Отправить POST запрос /api/orders") // Шаг для отчёта Allure
+    @Step("Отправить POST запрос /api/orders")
     public static Response sendPostRequestCreateOrder(String accessToken, OrderCreateRequest orderCreateRequest) {
-        return given()
-                .spec(SPEC) // Используем базовую спецификацию
-                .headers("Authorization", accessToken) // Добавляем заголовок авторизации
-                .body(orderCreateRequest) // Тело запроса — объект с данными заказа
-                .post("/api/orders") // POST запрос на создание заказа
-                .thenReturn(); // Возвращаем ответ
+        var request = given()
+                .spec(SPEC)
+                .body(orderCreateRequest);
+        if (accessToken != null && !accessToken.isEmpty()) {
+            request.header("Authorization", accessToken);
+        }
+        return request.post("/api/orders").thenReturn();
     }
 
-    @Step("Отправить GET запрос /api/orders") // Шаг для отчёта Allure
+    @Step("Отправить GET запрос /api/orders")
     public static Response sendPostRequestGetOrders(String accessToken) {
         return given()
-                .spec(SPEC) // Используем базовую спецификацию
-                .headers("Authorization", accessToken) // Добавляем заголовок авторизации
-                .get("/api/orders") // GET запрос на получение списка заказов
-                .thenReturn(); // Возвращаем ответ
+                .spec(SPEC)
+                .headers("Authorization", accessToken)
+                .get("/api/orders")
+                .thenReturn();
+    }
+
+    // Новый метод для получения списка ингредиентов
+    @Step("Отправить GET запрос /api/ingredients")
+    public static Response sendGetRequestIngredients() {
+        return given()
+                .spec(SPEC)
+                .get("/api/ingredients")
+                .thenReturn();
     }
 }
 
