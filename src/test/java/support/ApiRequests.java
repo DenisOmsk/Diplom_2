@@ -13,13 +13,13 @@ import data.User;
 import static io.restassured.RestAssured.given;
 
 public class ApiRequests {
-    private final static RequestSpecification SPEC = new RequestSpecBuilder() // Строим базовую спецификацию запроса
-            .setBaseUri(URL.getHost()) // Базовый URI для всех запросов
-            .addHeader("Content-type", "application/json") // Заголовок Content-type для JSON
-            .setRelaxedHTTPSValidation() // Отключаем строгую проверку HTTPS сертификатов
-            .addFilter(new RequestLoggingFilter()) // Логируем отправляемые запросы
-            .addFilter(new ResponseLoggingFilter()) // Логируем получаемые ответы
-            .addFilter(new ErrorLoggingFilter()) // Логируем ошибки запросов
+    private final static RequestSpecification SPEC = new RequestSpecBuilder()
+            .setBaseUri(URL.getHost())
+            .addHeader("Content-type", "application/json")
+            .setRelaxedHTTPSValidation() //
+            .addFilter(new RequestLoggingFilter()) //
+            .addFilter(new ResponseLoggingFilter()) //
+            .addFilter(new ErrorLoggingFilter()) //
             .build(); // Собираем спецификацию
 
     @Step("Отправить POST запрос /api/auth/register")
