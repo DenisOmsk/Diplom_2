@@ -28,7 +28,7 @@ public class OrderCreationTest {
 
     private String accessToken;
 
-    // Получаем список id ингредиентов из API
+    // Получаем список id ингредиентов
     private List<String> getIngredientIds() {
         var response = ApiRequests.sendGetRequestIngredients();
         response.then().statusCode(200);
